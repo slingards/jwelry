@@ -1,0 +1,8 @@
+
+const $=(s,p=document)=>p.querySelector(s), $$=(s,p=document)=>[...p.querySelectorAll(s)];
+$('.menu-btn')?.addEventListener('click',()=>$('.nav-links').classList.toggle('open'));
+const observer=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.12});$$('.reveal').forEach(e=>observer.observe(e));
+function renderCatalogue(type,limit){const host=$('#catalogue-grid');if(!host||!window.TKT_ITEMS)return;let items=TKT_ITEMS.filter(x=>!type||x.type===type);if(limit)items=items.slice(0,limit);host.innerHTML=items.map(x=>`<article class="card reveal" data-cat="${x.category}"><div class="card-media"><img src="${location.pathname.includes('/pages/')?'../':''}${x.image}" alt="${x.name} — ${x.category}" loading="lazy" width="800" height="800"></div><div class="card-body"><div class="card-meta"><span>${x.category}</span><span>${x.price}</span></div><h3>${x.name}</h3><p>${x.description}</p><small>${x.materials}</small></div></article>`).join('');$$('.reveal',host).forEach(e=>observer.observe(e));buildFilters(items)}
+function buildFilters(items){const f=$('#filters');if(!f)return;const cats=['All',...new Set(items.map(i=>i.category))];f.innerHTML=cats.map((c,i)=>`<button class="filter ${i?'':'active'}" data-filter="${c}">${c}</button>`).join('');f.addEventListener('click',e=>{if(!e.target.matches('.filter'))return;$$('.filter',f).forEach(b=>b.classList.remove('active'));e.target.classList.add('active');const val=e.target.dataset.filter;$$('.card','#catalogue-grid').forEach(c=>c.hidden=val!=='All'&&c.dataset.cat!==val)})}
+const type=document.body.dataset.catalogue; if(type)renderCatalogue(type); if(document.body.dataset.featured)renderCatalogue(null,6);
+$('#year')?.append(new Date().getFullYear());
